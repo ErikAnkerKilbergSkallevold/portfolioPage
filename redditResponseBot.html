@@ -1,0 +1,351 @@
+	<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="RedditResponseBotAssets/assets/clippy/clippy.css" rel="stylesheet" type="text/css"  media="all">
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<link rel="shortcut icon" href="RedditResponseBotAssets/assets/icons/computer-3.png" type="image/png">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link href="RedditResponseBotAssets/assets/win95.css" rel="stylesheet" type="text/css">
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+	<py-env>
+		- time
+		- random
+		- re
+		- paths:
+			- /dtsync/__init__.py
+			- /dtsync/config.py
+			- /dtsync/const.py
+			- /dtsync/endpoints.py
+			- /dtsync/reddit.py
+			- /dtsync/exceptions.py
+			- /dtsync/objector.py
+			- /dtsync/praw.ini
+		
+		
+		
+
+	</py-env>
+<title>RedditResponseBot</title>
+</head>	
+<body class="windows-scrollbar">
+	<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-95 ">
+            <img src="RedditResponseBotAssets/assets/icons/computer-3.png" alt="Bilde av en PC">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <p class="nav-link">RedditResponseBot <span class="sr-only">(current)</span></p>
+                </li>
+            </ul>
+        </div>
+    </nav>
+	
+	
+	<!-- Header -->
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">RedditResponseBot</h1>
+        <p class="lead">Currently borked cause of py-script...</p>
+    </div>
+
+    <!-- Not header -->
+	
+	<!-- Terminal -->
+	
+	<div class="container">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">cmd.exe</h4>
+            </div>
+            <div class="card-body">
+              <div class="form-95">	  
+					<py-script> 
+						import random
+						import praw
+						import time
+						import re
+
+						#userAgent = input("Enter userAgent (e.g. redditdev scraper by you): ")
+						#cID = input("Enter ClientID (get the token from Reddit): ")
+						#cSC= input("Enter ClientSecret (get the token from Reddit): ")
+						#userN = input("Enter username (the username of the bot you're using e.g. Redditor123): ")
+						#userP = input("Enter password (the password of the bot you're posting as): ")
+
+						userAgent = 'Hat Bot 2000'
+						cID = 'NLJMPUyFRCFJt4GFD6cJPg'
+						cSC= 'KFy5NYDsEIZUOCOk2vHutnSmECgXLg'
+						userN = 'HatBot-2000'
+						userP ='Sker0209'
+
+						numFound = 0
+						reddit = praw.Reddit(user_agent=userAgent,
+											client_id=cID,
+											client_secret=cSC,
+											username=userN,
+											password=userP)
+						subreddit = reddit.subreddit("AHatInTime2") #any subreddit you want to monitor e.g. Just a string like 'AHatInTime'
+
+						#index for you to keep track of
+						#0 aboutBot
+						#1 ...
+
+
+						responses = ["hello"] #Add responses here response[pos] must have same pos as keywords[pos]. It picks a random one 
+
+						keywords = ["sdasdasdasdsad"] #Add keywords to look for here
+
+						replied_to = []
+
+						numFound = 0
+						looptimer = 0
+
+						while True:
+							for submission in subreddit.new(limit=30): #this views the top 30 posts in that subbreddit
+								submission.comments.replace_more(limit=None)
+								for comment in submission.comments.list():
+									#print(comment.score)
+									if comment.author == userN and comment.score <= -1: #Deletes if downvited
+										print('Bot deleting own comment: ') #replies and outputs to the command line
+										print("Author: ", comment.author)
+										print("Text: ", comment.body)
+										print("Score: ", comment.score)
+										comment.delete()
+									else:
+										wordCount = comment.body.lower()
+										wordCountList = wordCount.split()
+										wordCountNumber = len(wordCountList)
+										#print("Comment text", wordCount)
+										#print("Word Count:", wordCountNumber)
+										#print()
+										if wordCountNumber >= 4:
+											#print("Comment too long, ignoring")
+											numFound = numFound + 0
+										else:
+											input = comment.body.lower()
+											inputSpaced = input.split(" ")
+											botCheck = "hatbot"
+											if botCheck not in input:
+												numFound = numFound + 0
+												#print("hatbot arg not found, ignoring")
+											else:
+												for x in inputSpaced:
+													strippedString = re.sub('\W+','', x)
+													pos1 = -1
+													for i in keywords:
+														pos1 = pos1 + 1
+														if comment.author == userN:
+															numFound = numFound + 0
+														# print("Already commented by userN, ignoring")
+														else:
+															if comment.id in replied_to:
+																numFound = numFound + 0
+																#print("Comment ID found, ignoring")
+															else:
+																if comment.saved:
+																	numFound = numFound + 0
+																	#print("Comment was saved, ignoring")
+																else:
+																	iAmBot = '\n \n^(Beep Boop I am a bot 🤖 and this action was performed automatically. Reply with "hatbot abouthatbot2000" to get more info. -1 downvotes removes comment)'
+																	print('Bot replying to: ') #replies and outputs to the command line
+																	print("Author: ", comment.author)
+																	print("Text: ", comment.body)
+																	print("Score: ", comment.score)
+																	print("---------------------------------")
+																	print('Bot saying: ', responses(pos1))
+																	print()
+																	replyString = "{}{}".format(responses(pos1), iAmBot)
+																	replied_to.append(comment.id)
+																	comment.save()
+																	comment.reply(replyString)
+																	time.sleep(6)
+
+
+
+							if numFound == 0:
+								print()
+								print("Sorry, didn't find any comments with those keywords, try again!")
+								time.sleep(15)
+
+							if numFound != 0:
+								print()
+								print("Replied to this many comments:", numFound)
+								time.sleep(15)
+
+
+
+
+
+						"""
+						sentence = "This is a. sentence! to- test wehter this shit works!!!...!!. /timepiece "
+						sentenceSpaced = sentence.split(" ")
+						for i in sentenceSpaced:
+							strippedString = re.sub('\W+','', i)
+							print(strippedString)
+						input = sentence.lower()
+						inputSpaced = input.split(" ")
+						for x in inputSpaced:
+							strippedString = re.sub('\W+','', x)
+							pos1 = -1
+							for i in keywords:
+								pos1 = pos1 + 1
+								for y in i:
+									if y == strippedString:
+										#print("good")
+										#print(pos1)
+										#print(keywords[pos1])
+										print(choose_Random(pos1))
+						"""
+
+					</py-script>
+				</div>
+            </div>
+        </div>
+    </div>
+	
+	
+<div class="container">
+    <div class="card mb-4">
+    <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Enter info</h4>
+        </div>
+      <div class="card-body">
+ <form>
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 col-form-label"><img src="RedditResponseBotAssets/assets/icons/user_computer-1.png" class="icon-16-4"> Enter userAgent (e.g. redditdev scraper by you):</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-95" id="inputUserAgent">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="inputPassword3" class="col-sm-2 col-form-label"><img src="RedditResponseBotAssets/assets/icons/user_network-1.png" class="icon-16-4"> Enter ClientID (get the token from Reddit):</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-95" id="inputCid">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 col-form-label"><img src="RedditResponseBotAssets/assets/icons/key_world-0.png" class="icon-16-4"> Enter ClientSecret (get the token from Reddit):</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-95" id="inputCsc">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="inputPassword3" class="col-sm-2 col-form-label"><img src="RedditResponseBotAssets/assets/icons/users-0.png" class="icon-16-4"> Enter username (the username of the bot you're using e.g. Redditor123):</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-95" id="inputUserN">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="inputPassword3" class="col-sm-2 col-form-label"><img src="RedditResponseBotAssets/assets/icons/key_padlock-0.png" class="icon-16-4"> Enter password (the password of the bot you're posting as):</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-95" id="inputUserP">
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-10">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+</div>
+	
+	
+</body>
+
+		
+	
+<!-- Footer -->
+    <footer class="taskbar">
+        <div class="row" style="margin-right: 0px;">
+            <div class="col-8">
+				<a href="index.html" class="btn start-button"><img src="RedditResponseBotAssets/assets/icons/windows-0.png" class="icon-16">Home</a>
+                <a href="https://github.com/ErikAnkerKilbergSkallevold" class="btn start-button"><img src="RedditResponseBotAssets/assets/icons/users-1.png" class="icon-16">Author</a>
+                <a href="https://github.com/ErikAnkerKilbergSkallevold/RedditResponseBot" class="btn start-button"><img src="RedditResponseBotAssets/assets/icons/directory_folder_options-5.png" class="icon-16">RRB</a>
+				<a href="https://github.com/AlexBSoft/win95.css" class="btn start-button"><img src="RedditResponseBotAssets/assets/icons/directory_folder_options-5.png" class="icon-16">Win95.css</a>
+            </div>
+            <div class="col-4 time">Bot by EAKS, style by AlexB</div>
+        </div>
+
+    </footer>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<!-- Add these scripts to  the bottom of the page -->
+<!-- jQuery 1.7+ -->
+<script src="RedditResponseBotAssets/assets/clippy/jquery-1.7.min.js"></script>
+
+<!-- Clippy.js -->
+<script src="RedditResponseBotAssets/assets/clippy/clippy.min.js"></script>
+
+<!-- Init script -->
+<script type="text/javascript">
+	clippy.load('Clippy', function(agent) {
+		// Do anything with the loaded agent
+		agent.show();
+		
+		setInterval(displayClip, 1000);
+
+		function displayClip(){
+			agent.animate();
+			agent.moveTo(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+			agent.gestureAt(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+		}
+		
+	});
+	
+	clippy.load('Merlin', function(agent) {
+		// Do anything with the loaded agent
+		agent.show();
+		
+		setInterval(displayClip, 1000);
+
+		function displayClip(){
+			agent.animate();
+			agent.moveTo(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+			agent.gestureAt(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+		}
+		
+	});
+	
+	clippy.load('Rover', function(agent) {
+		// Do anything with the loaded agent
+		agent.show();
+		
+		setInterval(displayClip, 1000);
+
+		function displayClip(){
+			agent.animate();
+			agent.moveTo(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+			agent.gestureAt(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+		}
+		
+	});
+	
+	clippy.load('Links', function(agent) {
+		// Do anything with the loaded agent
+		agent.show();
+		
+		setInterval(displayClip, 1000);
+
+		function displayClip(){
+			agent.animate();
+			agent.moveTo(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+			agent.gestureAt(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000))
+		}
+		
+	});
+	
+</script>
+	
+	
+
+</html>
+
